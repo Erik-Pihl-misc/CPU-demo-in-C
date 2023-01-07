@@ -149,6 +149,25 @@ const char* cpu_instruction_name(const uint8_t instruction);
 const char* cpu_state_name(const enum cpu_state state);
 
 /********************************************************************************
+* cpu_register_name: Returns the name of specified CPU register.
+*
+*                    - reg: The specified CPU register.
+********************************************************************************/
+static const char* cpu_register_name(const uint8_t reg)
+{
+   if (reg < CPU_REGISTER_ADDRESS_WIDTH)
+   {
+      static char s[10] = { '\0' };
+      sprintf(s, "R%hu", reg);
+      return s;
+   }
+   else
+   {
+      return "Unknown";
+   }
+}
+
+/********************************************************************************
 * get_binary: Returns specified number as a binary string with specified 
 *             minimum number of characters.
 *
