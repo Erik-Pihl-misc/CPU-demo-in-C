@@ -383,7 +383,11 @@ void control_unit_print(void)
    printf("Current state:\t\t\t\t\t%s\n", cpu_state_name(state));
    
    printf("Program counter:\t\t\t\t%hu\n", pc);
-   printf("Instruction register:\t\t\t\t%s\n", get_binary(ir, 24));
+
+   printf("Instruction register:\t\t\t\t%s ", get_binary((ir >> 16) & 0x0F, 8));
+   printf("%s ", get_binary((ir >> 8) & (0x0F), 8));
+   printf("%s\n", get_binary(ir & 0x0F, 8));
+
    printf("Status register (INZVC):\t\t\t%s\n\n", get_binary(sr, 5));
 
    printf("Content in CPU register R16:\t\t\t%s\n", get_binary(reg[R16], 8));
