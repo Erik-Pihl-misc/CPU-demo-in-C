@@ -1,142 +1,171 @@
+/********************************************************************************
+* cpu.h: Contains miscellaneous definitions and declarations for implementation
+*        of an 8-bit processor based on AVR:s instruction list.
+********************************************************************************/
 #ifndef CPU_H_
 #define CPU_H_
 
+/* Include directives: */
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
 
-#define NOP  0x00
-#define LDI  0x01
-#define MOV  0x02
-#define OUT  0x03
-#define IN   0x04
-#define STS  0x05
-#define LDS  0x06
-#define CLR  0x07
-#define ORI  0x08
-#define ANDI 0x09
-#define XORI 0x0A
-#define OR   0x0B
-#define AND  0x0C
-#define XOR  0x0D
-#define ADDI 0x0E
-#define SUBI 0x0F
+#define NOP  0x00 /* No operation. */
+#define LDI  0x01 /* Loads constant into CPU register. */
+#define MOV  0x02 /* Copies content of a CPU-register to another CPU register. */
+#define OUT  0x03 /* Writes to I/O location. */
+#define IN   0x04 /* Reads from I/O location. */
+#define STS  0x05 /* Stores data to address in data memory. */
+#define LDS  0x06 /* Loads data from address in data memory. */
+#define CLR  0x07 /* Clears CPU register. */
+#define ORI  0x08 /* Performs bitwise OR with constant. */
+#define ANDI 0x09 /* Performs bitwise AND with constant. */
+#define XORI 0x0A /* Performs bitwise XOR with constant. */
+#define OR   0x0B /* Performs bitwise OR with content in a CPU register. */
+#define AND  0x0C /* Performs bitwise AND with content in a CPU register. */
+#define XOR  0x0D /* Performs bitwise XOR with content in a CPU register. */
+#define ADDI 0x0E /* Performs addition with a constant. */
+#define SUBI 0x0F /* Performs subtraction with a constant. */
 
-#define ADD  0x10
-#define SUB  0x11
-#define INC  0x12
-#define DEC  0x13
-#define CPI  0x14
-#define CP   0x15
-#define JMP  0x16
-#define BREQ 0x17
-#define BRNE 0x18
-#define BRGE 0x19
-#define BRGT 0x1A
-#define BRLE 0x1B
-#define BRLT 0x1C
-#define CALL 0x1D
-#define RET  0x1E
-#define RETI 0x1F
+#define ADD  0x10 /* Performs addition with content in a CPU register. */
+#define SUB  0x11 /* Performs subtraction with content in a CPU register. */
+#define INC  0x12 /* Increments content of a CPU register. */
+#define DEC  0x13 /* Decrements content of a CPU register. */
+#define CPI  0x14 /* Compares content of a CPU register with a constant. */
+#define CP   0x15 /* Compares content between CPU registers. */
+#define JMP  0x16 /* Jumps to specified address. */
+#define BREQ 0x17 /* Jumps to specified address if result of last calculation is zero. */
+#define BRNE 0x18 /* Jumps to specified address if result of last calculation is not equal to zero. */
+#define BRGE 0x19 /* Jumps to specified address if result of last calculation is greater or equal to zero. */
+#define BRGT 0x1A /* Jumps to specified address if result of last calculation is greater than zero. */
+#define BRLE 0x1B /* Jumps to specified address if result of last calculation is lower or equal to zero. */
+#define BRLT 0x1C /* Jumps to specified address if result of last calculation is lower than zero. */
+#define CALL 0x1D /* Calls subroutine at specified address and stores the return address on the stack. */
+#define RET  0x1E /* Returns from subroutine by jumping to the return address popped from the stack. */
+#define RETI 0x1F /* Returns from interrupt by restoring program as it was before the interrupt occured. */
 
-#define PUSH 0x20
-#define POP  0x21
-#define LSL  0x22
-#define LSR  0x23
-#define SEI  0x24
-#define CLI  0x25
+#define PUSH 0x20 /* Pushes value stored in a CPU register to the stack. */
+#define POP  0x21 /* Pops value from the stack and loads it into a CPU register. */
+#define LSL  0x22 /* Shifts content of a CPU register one step to the left. */
+#define LSR  0x23 /* Shifts content of a CPU register one step to the right. */
+#define SEI  0x24 /* Enables interrupts globally by setting the I-flag of the status register. */
+#define CLI  0x25 /* Disables interrupts globally by clearning the I-flag of the status register. */
 
-#define DDRB  0x00
-#define PORTB 0x01
-#define PINB  0x02
+#define DDRB  0x00 /* Data direction register for I/O-port B. */
+#define PORTB 0x01 /* Data register for I/O-port B. */
+#define PINB  0x02 /* Pin input register for I/O-port B. */
 
-#define DDRC  0x03
-#define PORTC 0x04
-#define PINC  0x05
+#define DDRC  0x03 /* Data direction register for I/O-port C. */
+#define PORTC 0x04 /* Data register for I/O-port C. */
+#define PINC  0x05 /* Pin input register for I/O-port C. */
 
-#define DDRD  0x06
-#define PORTD 0x07
-#define PIND  0x08
+#define DDRD  0x06 /* Data direction register for I/O-port D. */
+#define PORTD 0x07 /* Data register for I/O-port D. */
+#define PIND  0x08 /* Pin input register for I/O-port D. */
 
-#define PCICR 0x09
-#define PCIFR 0x0A
+#define PCICR 0x09 /* Pin change interrupt control register for all I/O-ports. */
+#define PCIFR 0x0A /* Pin change interrupt flag register for all I/O-ports. */
 
-#define PCMSK0 0x10
-#define PCMSK1 0x11
-#define PCMSK2 0x12
+#define PCMSK0 0x10 /* Pin change interrupt mask register for I/O-port B. */
+#define PCMSK1 0x11 /* Pin change interrupt mask register for I/O-port C. */
+#define PCMSK2 0x12 /* Pin change interrupt mask register for I/O-port D. */
 
-#define PCIE0 0
-#define PCIE1 1
-#define PCIE2 2
+#define PCIE0 0 /* Pin change interrupt enable bit for I/O-port B. */
+#define PCIE1 1 /* Pin change interrupt enable bit for I/O-port C. */
+#define PCIE2 2 /* Pin change interrupt enable bit for I/O-port D. */
 
-#define PCIF0 0
-#define PCIF1 1
-#define PCIF2 2
+#define PCIF0 0 /* Pin change interrupt flag bit for I/O-port B. */
+#define PCIF1 1 /* Pin change interrupt flag bit for I/O-port C. */
+#define PCIF2 2 /* Pin change interrupt flag bit for I/O-port D. */
 
-#define RESET_vect  0x00
-#define PCINT0_vect 0x02
-#define PCINT1_vect 0x04
-#define PCINT2_vect 0x06
+#define RESET_vect  0x00 /* Reset vector. */
+#define PCINT0_vect 0x02 /* Pin change interrupt vector 0 (for I/O-port B). */
+#define PCINT1_vect 0x04 /* Pin change interrupt vector 0 (for I/O-port C). */
+#define PCINT2_vect 0x06 /* Pin change interrupt vector 0 (for I/O-port D). */
 
-#define R0  0x00
-#define R1  0x01
-#define R2  0x02
-#define R3  0x03
-#define R4  0x04
-#define R5  0x05
-#define R6  0x06
-#define R7  0x07
-#define R8  0x08
-#define R9  0x09
-#define R10 0x0A
-#define R11 0x0B
-#define R12 0x0C
-#define R13 0x0D
-#define R14 0x0E
-#define R15 0x0F
+#define R0  0x00 /* Address for CPU register R0. */
+#define R1  0x01 /* Address for CPU register R1. */
+#define R2  0x02 /* Address for CPU register R2. */
+#define R3  0x03 /* Address for CPU register R3. */
+#define R4  0x04 /* Address for CPU register R4. */
+#define R5  0x05 /* Address for CPU register R5. */
+#define R6  0x06 /* Address for CPU register R6. */
+#define R7  0x07 /* Address for CPU register R7. */
+#define R8  0x08 /* Address for CPU register R8. */
+#define R9  0x09 /* Address for CPU register R9. */
+#define R10 0x0A /* Address for CPU register R10. */
+#define R11 0x0B /* Address for CPU register R11. */
+#define R12 0x0C /* Address for CPU register R12. */
+#define R13 0x0D /* Address for CPU register R13. */
+#define R14 0x0E /* Address for CPU register R14. */
+#define R15 0x0F /* Address for CPU register R15. */
 
-#define R16 0x10
-#define R17 0x11
-#define R18 0x12
-#define R19 0x13
-#define R20 0x14
-#define R21 0x15
-#define R22 0x16
-#define R23 0x17
-#define R24 0x18
-#define R25 0x19
-#define R26 0x1A
-#define R27 0x1B
-#define R28 0x1C
-#define R29 0x1D
-#define R30 0x1E
-#define R31 0x1F
+#define R16 0x10 /* Address for CPU register R16. */
+#define R17 0x11 /* Address for CPU register R17. */
+#define R18 0x12 /* Address for CPU register R18. */
+#define R19 0x13 /* Address for CPU register R19. */
+#define R20 0x14 /* Address for CPU register R20. */
+#define R21 0x15 /* Address for CPU register R21. */
+#define R22 0x16 /* Address for CPU register R22. */
+#define R23 0x17 /* Address for CPU register R23. */
+#define R24 0x18 /* Address for CPU register R24. */
+#define R25 0x19 /* Address for CPU register R25. */
+#define R26 0x1A /* Address for CPU register R26. */
+#define R27 0x1B /* Address for CPU register R27. */
+#define R28 0x1C /* Address for CPU register R28. */
+#define R29 0x1D /* Address for CPU register R29. */
+#define R30 0x1E /* Address for CPU register R30. */
+#define R31 0x1F /* Address for CPU register R31. */
 
-#define CPU_REGISTER_ADDRESS_WIDTH 32
-#define CPU_REGISTER_DATA_WIDTH    8
-#define IO_REGISTER_DATA_WIDTH     8
+#define CPU_REGISTER_ADDRESS_WIDTH 32 /* 32 CPU registers in control unit. */
+#define CPU_REGISTER_DATA_WIDTH    8  /* 8 bit data width per CPU register. */
+#define IO_REGISTER_DATA_WIDTH     8  /* 8 bit data width per I/O location. */
 
-#define I 4
-#define N 3
-#define Z 2
-#define V 1
-#define C 0
+#define I 4 /* Interrupt flag in status register. */
+#define N 3 /* Negative flag in status register. */
+#define Z 2 /* Zero flag in status register. */
+#define V 1 /* Overflow flag in status register. */
+#define C 0 /* Carry flag in status register. */
 
+/********************************************************************************
+* set: Sets bit in specified register without affecting other bits.
+* 
+*      - reg: Reference to the register.
+*      - bit: The bit to be set in the referenced register.
+********************************************************************************/
 #define set(reg, bit)  reg |= (1 << bit)
+
+/********************************************************************************
+* clr: Clears bit in specified register without affecting other bits.
+*
+*      - reg: Reference to the register.
+*      - bit: The bit to be cleared in the referenced register.
+********************************************************************************/
 #define clr(reg, bit)  reg &= ~(1 << (bit))
+
+/********************************************************************************
+* read: Reads bit from specified register. The return value is not equal to
+*       zero if the bit is high. If the bit is low the return value is zero.
+*
+*       - reg: Reference to the register.
+*       - bit: The bit to be read in the referenced register.
+********************************************************************************/
 #define read(reg, bit) (reg & (1 << (bit)))
 
+/********************************************************************************
+* cpu_state: Enumeration for the different states of the CPU instructio cycle.
+********************************************************************************/
 enum cpu_state
 {
-   CPU_STATE_FETCH,
-   CPU_STATE_DECODE,
-   CPU_STATE_EXECUTE
+   CPU_STATE_FETCH,  /* Fetches next instruction from program memory. */
+   CPU_STATE_DECODE, /* Decodes the fetched instruction. */
+   CPU_STATE_EXECUTE /* Executes the decoded instruction. */
 };
 
 /********************************************************************************
 * cpu_instruction_name: Returns the name of specified instruction.
-* 
+*
 *                       - instruction: The specified CPU instruction.
 ********************************************************************************/
 const char* cpu_instruction_name(const uint8_t instruction);
@@ -168,13 +197,13 @@ static const char* cpu_register_name(const uint8_t reg)
 }
 
 /********************************************************************************
-* get_binary: Returns specified number as a binary string with specified 
+* get_binary: Returns specified number as a binary string with specified
 *             minimum number of characters.
 *
 *             - num      : The specified number.
 *             - min_chars: Minimum number of characters in the returned string.
 ********************************************************************************/
-const char* get_binary(uint32_t num, 
+const char* get_binary(uint32_t num,
                        const uint8_t min_chars);
 
 #endif /* CPU_H_ */

@@ -1,5 +1,10 @@
+/********************************************************************************
+* cpu.c: Contains function definitions for getting names of CPU instructions,
+*        CPU registers and number of binary digits in unsigned numbers as text.
+********************************************************************************/
 #include "cpu.h"
 
+/* Static functions: */
 static inline size_t num_binary_digits(uint32_t num);
 static inline char integer_to_char(const int num);
 
@@ -71,7 +76,7 @@ const char* cpu_state_name(const enum cpu_state state)
 *             - num      : The specified number.
 *             - min_chars: Minimum number of characters in the returned string.
 ********************************************************************************/
-const char* get_binary(uint32_t num, 
+const char* get_binary(uint32_t num,
                        const uint8_t min_chars)
 {
    static char s[33] = { '\0' };
@@ -90,6 +95,11 @@ const char* get_binary(uint32_t num,
    return s;
 }
 
+/********************************************************************************
+* get_binary_digits: Returns the number of binary digits in specified number.
+* 
+*                    - num: The number in unsigned integer form.
+********************************************************************************/
 static inline size_t num_binary_digits(uint32_t num)
 {
    size_t num_digits = 1;
@@ -97,6 +107,12 @@ static inline size_t num_binary_digits(uint32_t num)
    return num_digits;
 }
 
+/********************************************************************************
+* integer_to_char: Converts specified number from integer to corresponding 
+*                  character in the ASCII-table.
+*
+*                    - num: The number in integer form.
+********************************************************************************/
 static inline char integer_to_char(const int num)
 {
    return num + 48;

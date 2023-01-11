@@ -1,5 +1,10 @@
+/********************************************************************************
+* cpu_controller.c: Contains functionality for control of the program flow
+*                   by input from the keyboard.
+********************************************************************************/
 #include "cpu_controller.h"
 
+/* Static functions: */
 static inline void print_information_at_start(void);
 static inline void print_menu(void);
 static int execute_selection(void);
@@ -25,15 +30,21 @@ void cpu_controller_run_by_input(void)
    }
 }
 
+/********************************************************************************
+* print_information_at_start: Prints information about connected devices.
+********************************************************************************/
 static inline void print_information_at_start(void)
 {
-   printf("A led is connected to pin 8 (PORTB0).\n"); 
+   printf("A led is connected to pin 8 (PORTB0).\n");
    printf("Press the button connected to pin 13 (PORTB5) to toggle the led.\n");
    printf("To press the button, set the fifth bit of the PINB register, ");
    printf("for instance by entering the value 32!\n\n");
    return;
 }
 
+/********************************************************************************
+* print_menu: Prints menu for user control of program flow and input.
+********************************************************************************/
 static inline void print_menu(void)
 {
    printf("Please select between the following alternatives:\n");
@@ -45,6 +56,9 @@ static inline void print_menu(void)
    return;
 }
 
+/********************************************************************************
+* execute_selection: Reads and executes user selection entered from keyboard.
+********************************************************************************/
 static int execute_selection(void)
 {
    const uint8_t selection = get_selection();
@@ -66,7 +80,7 @@ static int execute_selection(void)
    {
       printf("Enter new data for pin input register PINB:\n");
       const uint8_t input = get_byte();
-      data_memory_write(PINB, input);
+      data_memory_write(PINB, input); 
       printf("Wrote %s to pin input register PINB!\n\n", get_binary(input, 8));
    }
    else if (selection == 5)
@@ -77,6 +91,9 @@ static int execute_selection(void)
    return 0;
 }
 
+/********************************************************************************
+* get_selection: Retunrs user selection from keyboard after correct input.
+********************************************************************************/
 static uint8_t get_selection(void)
 {
    while (1)
@@ -94,6 +111,12 @@ static uint8_t get_selection(void)
    }
 }
 
+/********************************************************************************
+* readline: Reads text entered from keyboard into referenced string. 
+* 
+*           - s   : Reference to the string which stores entered content.
+*           - size: The capacity of the string.
+********************************************************************************/
 static void readline(char* s,
                      const int size)
 {
@@ -110,6 +133,9 @@ static void readline(char* s,
    return;
 }
 
+/********************************************************************************
+* get_byte: Returns an unsigned integer entered from the terminal.
+********************************************************************************/
 static inline uint8_t get_byte(void)
 {
    char s[20] = { '\0' };

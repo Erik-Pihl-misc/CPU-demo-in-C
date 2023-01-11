@@ -12,19 +12,20 @@ static void generate_interrupt(const uint8_t interrupt_vector,
                                const uint8_t flag_bit);
 static void return_from_interrupt(void);
 
-static uint32_t ir;
-static uint8_t pc;
-static uint8_t mar;
-static uint8_t sr;
+/* Static variables: */
+static uint32_t ir;    /* Instruction register, stores next instruction to execute. */
+static uint8_t pc;     /* Program counter, stores address to next instruction to fetch. */
+static uint8_t mar;    /* Memory address register, stores address for current instruction. */
+static uint8_t sr;     /* Status register, stores status bits INZVC. */
 
-static uint8_t op_code;
-static uint8_t op1;
-static uint8_t op2;
+static uint8_t op_code; /* Stores OP-code, for example LDI, OUT, JMP etc. */
+static uint8_t op1;     /* Stores first operand, most often a destination. */
+static uint8_t op2;     /* Stores second operand, most often a value or read address. */
 
-static uint8_t reg[CPU_REGISTER_ADDRESS_WIDTH];
-static enum cpu_state state;
+static uint8_t reg[CPU_REGISTER_ADDRESS_WIDTH]; /* CPU-registers R0 - R31. */
+static enum cpu_state state;                    /* Stores current state. */
 
-static uint8_t interrupt_source;
+static uint8_t interrupt_source;                /* Vector för interrupt source. */
 
 static struct pci_regs_vtable pci_regs_vtable =
 {
@@ -98,23 +99,23 @@ void control_unit_run_next_state(void)
    {
       case CPU_STATE_FETCH:
       {
-         ir = program_memory_read(pc);
-         mar = pc;
-         pc++;
-         state = CPU_STATE_DECODE;
+         ir = program_memory_read(pc); /* Fetches next instruction. */
+         mar = pc;                     /* Stores address of current instruction. */
+         pc++;                         /* Program counter points to next instruction. */
+         state = CPU_STATE_DECODE;     /* Decodes the instruction during next clock cycle. */
          break;
       }
       case CPU_STATE_DECODE:
       {
-         op_code = ir >> 16;
-         op1 = ir >> 8;
-         op2 = ir;
-         state = CPU_STATE_EXECUTE;
+         op_code = ir >> 16;           /* Bit 23 downto 16 consist of the OP code. */
+         op1 = ir >> 8;                /* Bit 15 downto 8 consists of the first operand. */
+         op2 = ir;                     /* Bit 7 downto 0 constist of the second operand. */
+         state = CPU_STATE_EXECUTE;    /* Executes the instruction during next clock cycle. */
          break;
       }
       case CPU_STATE_EXECUTE:
       {
-         switch (op_code)
+         switch (op_code)              /* Executes specified operation. */
          {
             case NOP:
             {
@@ -342,17 +343,17 @@ void control_unit_run_next_state(void)
             }
          }
 
-         state = CPU_STATE_FETCH;
+         state = CPU_STATE_FETCH;      /* Fetches next instruction during next clock cycle. */
          break;
       }
       default:
       {
-         control_unit_reset();
+         control_unit_reset();         /* System reset if error occurs. */
          break;
       }
    }
 
-   monitor_interrupts();
+   monitor_interrupts();               /* Monitors interrupts during every clock cycle. */
    return;
 }
 
@@ -384,9 +385,9 @@ void control_unit_print(void)
    
    printf("Program counter:\t\t\t\t%hu\n", pc);
 
-   printf("Instruction register:\t\t\t\t%s ", get_binary((ir >> 16) & 0x0F, 8));
-   printf("%s ", get_binary((ir >> 8) & (0x0F), 8));
-   printf("%s\n", get_binary(ir & 0x0F, 8));
+   printf("Instruction register:\t\t\t\t%s ", get_binary((ir >> 16) & 0xFF, 8));
+   printf("%s ", get_binary((ir >> 8) & (0xFF), 8));
+   printf("%s\n", get_binary(ir & 0xFF, 8));
 
    printf("Status register (INZVC):\t\t\t%s\n\n", get_binary(sr, 5));
 
